@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Blocked</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Intergalactic background animation */
+        body {
+            font-family: 'Open Sans', Arial, sans-serif;
+            background: radial-gradient(circle, #1a1a2e, #16213e);
+            background-size: 400% 400%;
+            animation: galacticBG 30s ease infinite;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #ffffff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Stars effect */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://drive.google.com/file/d/1JdY-2zlHKODyaSyVJfpyGYTNb7ATFCFa/view?usp=sharing') repeat;
+            opacity: 0.5;
+            pointer-events: none;
+            animation: twinkling 3s infinite alternate;
+        }
+
+        /* Loading spinner */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            border: 10px solid rgba(255, 255, 255, 0.3);
+            border-top: 10px solid #ff6f61;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Container styling */
+        .container {
+            text-align: center;
+            background-color: rgba(20, 20, 20, 0.9);
+            border-radius: 30px;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.8);
+            padding: 60px;
+            max-width: 600px;
+            position: relative;
+            animation: fadeInUp 1.5s ease-out, bounceIn 0.8s ease forwards;
+            border: 5px solid;
+            border-image: linear-gradient(45deg, #ff6f61, #f9d88f);
+            border-image-slice: 1;
+            backdrop-filter: blur(15px);
+            overflow: hidden;
+        }
+
+        .container:hover {
+            transform: scale(1.05);
+            box-shadow: 0 30px 120px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Animated Icon (Lock) */
+        .icon {
+            font-size: 7rem;
+            color: #ff6f61;
+            margin-bottom: 20px;
+            animation: rotateIcon 4s infinite linear, pulse 1s infinite;
+        }
+
+        /* Heading with glowing effect */
+        h1 {
+            color: #ff6f61;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            opacity: 0;
+            transform: translateY(-30px);
+            animation: slideIn 1s ease forwards, glow 4s infinite alternate ease-in-out;
+        }
+
+        /* Paragraph styling */
+        p {
+            color: #d1d1d1;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideIn 1.2s ease forwards;
+            transition: transform 0.5s ease;
+            line-height: 1.5;
+        }
+
+        p:hover {
+            transform: scale(1.05);
+            color: #ff6f61;
+            text-shadow: 0 0 5px #ff6f61;
+        }
+
+        /* Button with ripple effect */
+        .btn {
+            background-color: #ff6f61;
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            font-size: 1.5rem;
+            border-radius: 8px;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            animation: swing 1.5s infinite alternate;
+        }
+
+        .btn:hover {
+            background-color: #f9d88f;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+            animation: shake 0.5s;
+        }
+
+        .btn:active::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            animation: ripple 0.6s ease-out;
+        }
+
+        /* Modal styling */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            max-width: 500px;
+            color: #333;
+        }
+
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: #ff6f61;
+        }
+
+        /* Tooltip for the button */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip:hover::after {
+            content: "Click for more information!";
+            position: absolute;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 5px 10px;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            z-index: 10;
+            animation: fadeIn 0.3s;
+        }
+
+        /* Social media buttons */
+        .social-btns {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            color: white;
+            font-size: 2.5rem;
+            margin: 0 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .social-btn:hover {
+            transform: scale(1.3);
+        }
+
+        /* Notification badge */
+        .notification-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff6f61;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            animation: bounce 1s infinite;
+        }
+
+        /* New Cosmic Animation */
+        @keyframes twinkling {
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        /* Background galactic animation */
+        @keyframes galacticBG {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Spinner animation */
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Text and Container Slide-in Animation */
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Glow animation for heading */
+        @keyframes glow {
+            0% {
+                text-shadow: 0 0 10px #ff6f61, 0 0 20px #ff6f61, 0 0 30px #ff6f61;
+            }
+            100% {
+                text-shadow: 0 0 20px #ff6f61, 0 0 40px #ff6f61;
+            }
+        }
+
+        /* Rotate Icon Animation */
+        @keyframes rotateIcon {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Pulse Animation for Icon */
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+
+        /* Bounce Animation for Notification Badge */
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* Bounce In Animation for Container */
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.9);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Shake Animation for Button */
+        @keyframes shake {
+            0% {
+                transform: translateX(0);
+            }
+            25% {
+                transform: translateX(-5px);
+            }
+            50% {
+                transform: translateX(5px);
+            }
+            75% {
+                transform: translateX(-5px);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        /* Swing Animation for Button */
+        @keyframes swing {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(10deg);
+            }
+        }
+
+        /* Ripple effect for button */
+        @keyframes ripple {
+            to {
+                transform: translate(-50%, -50%) scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* Fade-in effect for modal */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="stars"></div>
+    <div class="loading"></div>
+
+    <div class="container">
+        <div class="notification-badge">Access Denied</div>
+        <div class="icon"><i class="fas fa-lock"></i></div>
+        <h1>Access Blocked!</h1>
+        <p>It seems that the website you are trying to access is restricted by the organization's policy.</p>
+        <div class="tooltip">
+            <a class="btn" id="modalBtn">Learn More</a>
+        </div>
+        <div class="social-btns">
+            <button class="social-btn" onclick="shareOnSocial('facebook')"><i class="fab fa-facebook"></i></button>
+            <button class="social-btn" onclick="shareOnSocial('twitter')"><i class="fab fa-twitter"></i></button>
+            <button class="social-btn" onclick="shareOnSocial('linkedin')"><i class="fab fa-linkedin"></i></button>
+        </div>
+        <div class="footer">© 2024 Your Company Name. All rights reserved.</div>
+    </div>
+
+    <!-- Modal for additional information -->
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeModal">&times;</span>
+            <h2>Why is this site blocked?</h2>
+            <p>This site may contain content that is not appropriate for the workplace, including:</p>
+            <ul>
+                <li>Adult content</li>
+                <li>Gambling</li>
+                <li>Violent content</li>
+                <li>Malicious software</li>
+            </ul>
+            <p>If you believe this is a mistake, please contact your IT administrator.</p>
+        </div>
+    </div>
+
+    <audio id="blockSound" src="https://www.soundjay.com/button/beep-07.wav" preload="auto"></audio>
+
+    <script>
+        // Play sound on loading
+        const audio = document.getElementById('blockSound');
+        audio.play();
+
+        // Show loading spinner
+        document.querySelector('.loading').style.display = 'block';
+
+        // Simulate loading process
+        setTimeout(() => {
+            document.querySelector('.loading').style.display = 'none';
+        }, 2000); // Hide loading spinner after 2 seconds
+
+        // Modal functionality
+        const modal = document.getElementById("myModal");
+        const btn = document.getElementById("modalBtn");
+        const span = document.getElementById("closeModal");
+
+        btn.onclick = function() {
+            modal.style.display = "flex";
+        }
+
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Social media share functionality
+        function shareOnSocial(platform) {
+            let url = window.location.href;
+            let shareUrl = '';
+            switch (platform) {
+                case 'facebook':
+                    shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+                    break;
+                case 'twitter':
+                    shareUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}`;
+                    break;
+                case 'linkedin':
+                    shareUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
+                    break;
+            }
+            window.open(shareUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
